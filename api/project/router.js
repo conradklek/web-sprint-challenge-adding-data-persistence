@@ -5,7 +5,7 @@ const Project = require('./model');
 router.get('/', (req, res, next) => {
     Project.getProjects()
         .then(projects => {
-            res.status(200).json(projects);
+            res.status(200).json(projects.map(project => project.project_completed ? { ...project, project_completed: true } : {...project, project_completed: false }));
         })
         .catch(error => {
             next(error);

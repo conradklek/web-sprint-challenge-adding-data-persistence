@@ -9,10 +9,10 @@ async function getProjectById(project_id) {
 }
 
 async function addProject(project) {
-    return await db('projects').insert(project)
-        .then(id => {
-            return getProjectById(id[0]);
-        })
+    const [id] = await db('projects').insert(project, 'project_id');
+    let newProject = await getProjectById(id)
+    newProject.project_completed = newProject.project_completed === 1 ? true : false;
+    return newProject;
 }
 
 module.exports = { getProjects, getProjectById, addProject };
