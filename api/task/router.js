@@ -15,7 +15,7 @@ router.get('/:task_id', (req, res, next) => {
 router.get('/', (req, res, next) => {
     Task.getTasks()
         .then(tasks => {
-            res.status(200).json(tasks);
+            res.status(200).json(tasks.map(task => task.task_completed ? { ...task, task_completed: true } : {...task, task_completed: false }))
         })
         .catch(error => {
             next(error);
@@ -23,13 +23,18 @@ router.get('/', (req, res, next) => {
 });
 
 router.post('/', (req, res, next) => {
-    Task.addTask(req.body)
-        .then(task => {
-            res.status(201).json(task);
-        })
-        .catch(error => {
-            next(error);
-        })
+    const { task_description} = req.body;
+    if (!task_description) {
+        res.status(400).json({ message: 'Please provide a task description' });
+    } else {
+        Task.addTask(req.body)
+            .then(task => {
+                res.status(201).json(task.task_completed ? { ...task, task_completed: true } : {...task, task_completed: false });
+            })
+            .catch(error => {
+                next(error);
+            })
+    }
 });
 
 // eslint-disable-next-line no-unused-vars
